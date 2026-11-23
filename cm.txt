@@ -1,0 +1,4 @@
+cd ~/Desktop/mlops_project && source venv/bin/activate && ls
+python main.py --prepare
+python main.py --train
+python main.py --evaluate
