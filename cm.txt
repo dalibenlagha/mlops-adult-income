@@ -1,4 +1,35 @@
-cd ~/Desktop/mlops_project && source venv/bin/activate && ls
-python main.py --prepare
-python main.py --train
-python main.py --evaluate
+SETUP
+cd ~/Desktop/mlops_project && source venv/bin/activate    go to project + turn on venv
+pip install -r requirements.txt                            install all libraries
+
+ATELIER 2 (main.py)
+python main.py                                             prepare + train + evaluate + save
+python main.py --prepare                                   prepare data only
+python main.py --train                                     prepare + train + save
+python main.py --evaluate                                  load model + evaluate
+
+ATELIER 3 (Prefect flows)
+python pipeline_prefect.py --flow code                     4 code checks only
+python pipeline_prefect.py --flow train                    prepare, train, save
+python pipeline_prefect.py --flow evaluate                 load model, evaluate, predict
+python pipeline_prefect.py --flow all                      install, code, prepare, train, save, evaluate, predict
+
+CODE CHECKS (one by one)
+black -l 100 model_pipeline.py main.py pipeline_prefect.py     format code
+flake8 --max-line-length 100 model_pipeline.py main.py pipeline_prefect.py   code quality
+bandit model_pipeline.py main.py pipeline_prefect.py           security
+pytest tests                                                   unit tests
+
+PREFECT SERVER + SCHEDULE (3 terminals)
+prefect server start                                       T1: server + dashboard (localhost:4200)
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"   T2: point to your server (once)
+python deploiement_prefect.py                              T2: worker + daily schedules
+prefect deployment ls                                      T3: list deployments
+prefect deployment run 'all/ml-pipeline-all'               T3: run a deployment now
+prefect flow-run ls                                        list recent runs
+
+GIT / GITHUB
+git status                                                 see what changed
+git add . && git commit -m "message"                       save a version
+git push                                                   send to GitHub
+git pull                                                   get latest from GitHub

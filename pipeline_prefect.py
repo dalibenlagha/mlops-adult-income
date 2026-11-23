@@ -25,7 +25,15 @@ def run(cmd):
     print("$", " ".join(cmd))
     subprocess.run([sys.executable, "-m", *cmd], check=True)  # nosec B603
 
-
+@task(name="Recuperation du projet (git pull)")
+def git_pull():
+    result = subprocess.run(  # nosec B603 B607
+        ["git", "pull"], capture_output=True, text=True
+    )
+    print((result.stdout + result.stderr).strip())
+    if result.returncode != 0:
+        raise RuntimeError("git pull failed")
+        
 # ---------- Tasks: install + code checks ----------
 @task(name="Installer les dependances")
 def install_dependencies():
@@ -116,6 +124,7 @@ def evaluate_flow():
 
 @flow(name="all", log_prints=True)
 def all_flow():
+    git_pull()
     install_dependencies()
     code_flow()
     X_train, X_test, y_train, y_test = prepare_task()
